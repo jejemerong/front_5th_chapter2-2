@@ -58,8 +58,15 @@ export const calculateCartTotal = (
   // 쿠폰 적용
   let finalTotalAfterDiscount = totalAfterItemDiscount;
   if (selectedCoupon) {
-    finalTotalAfterDiscount =
-      totalAfterItemDiscount * (1 - selectedCoupon.discountValue);
+    if (selectedCoupon.discountType === "amount") {
+      finalTotalAfterDiscount = Math.max(
+        0,
+        totalAfterItemDiscount - selectedCoupon.discountValue
+      );
+    } else {
+      finalTotalAfterDiscount =
+        totalAfterItemDiscount * (1 - selectedCoupon.discountValue / 100);
+    }
   }
 
   const totalDiscount = totalBeforeDiscount - finalTotalAfterDiscount;
