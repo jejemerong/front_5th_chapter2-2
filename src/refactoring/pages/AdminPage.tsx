@@ -1,5 +1,10 @@
 import { useState } from "react";
 import { Coupon, Discount, Product } from "../../types.ts";
+import {
+  convertDecimalToPercentage,
+  convertPercentageToDecimal,
+} from "../utils/convertUnit.ts";
+import { CouponList } from "../components/admin/CouponList.tsx";
 
 interface Props {
   products: Product[];
@@ -48,12 +53,10 @@ export const AdminPage = ({
     });
   };
 
-  // handleEditProduct 함수 수정
   const handleEditProduct = (product: Product) => {
     setEditingProduct({ ...product });
   };
 
-  // 새로운 핸들러 함수 추가
   const handleProductNameUpdate = (productId: string, newName: string) => {
     if (editingProduct && editingProduct.id === productId) {
       const updatedProduct = { ...editingProduct, name: newName };
@@ -61,7 +64,6 @@ export const AdminPage = ({
     }
   };
 
-  // 새로운 핸들러 함수 추가
   const handlePriceUpdate = (productId: string, newPrice: number) => {
     if (editingProduct && editingProduct.id === productId) {
       const updatedProduct = { ...editingProduct, price: newPrice };
@@ -69,7 +71,6 @@ export const AdminPage = ({
     }
   };
 
-  // 수정 완료 핸들러 함수 추가
   const handleEditComplete = () => {
     if (editingProduct) {
       onProductUpdate(editingProduct);
@@ -313,11 +314,15 @@ export const AdminPage = ({
                             <input
                               type="number"
                               placeholder="할인율 (%)"
-                              value={newDiscount.rate * 100}
+                              value={convertDecimalToPercentage(
+                                newDiscount.rate
+                              )}
                               onChange={(e) =>
                                 setNewDiscount({
                                   ...newDiscount,
-                                  rate: parseInt(e.target.value) / 100,
+                                  rate: convertPercentageToDecimal(
+                                    parseInt(e.target.value)
+                                  ),
                                 })
                               }
                               className="w-1/3 p-2 border rounded"
@@ -418,24 +423,7 @@ export const AdminPage = ({
                 쿠폰 추가
               </button>
             </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-2">현재 쿠폰 목록</h3>
-              <div className="space-y-2">
-                {coupons.map((coupon, index) => (
-                  <div
-                    key={index}
-                    data-testid={`coupon-${index + 1}`}
-                    className="bg-gray-100 p-2 rounded"
-                  >
-                    {coupon.name} ({coupon.code}):
-                    {coupon.discountType === "amount"
-                      ? `${coupon.discountValue}원`
-                      : `${coupon.discountValue}%`}{" "}
-                    할인
-                  </div>
-                ))}
-              </div>
-            </div>
+            <CouponList coupons={coupons} />
           </div>
         </div>
       </div>
