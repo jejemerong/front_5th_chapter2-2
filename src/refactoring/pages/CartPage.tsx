@@ -1,11 +1,7 @@
-import { CartItem, Coupon, Product } from "../../types.ts";
+import { Coupon, Product } from "../../types.ts";
+import { CartList } from "../components/CartList.tsx";
 import { ProductList } from "../components/ProductList.tsx";
 import { useCart } from "../hooks";
-import {
-  getAppliedDiscount,
-  getMaxDiscount,
-  getRemainingStock,
-} from "../models/cart.ts";
 import { HeadingTitle } from "../ui/HeadingTitle.tsx";
 
 interface Props {
@@ -31,58 +27,17 @@ export const CartPage = ({ products, coupons }: Props) => {
     <div className="container mx-auto p-4">
       <HeadingTitle title="장바구니" level="page" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <ProductList products={products} cart={cart} addToCart={addToCart} />
+        <div>
+          <HeadingTitle title="상품 목록" level="section" />
+          <ProductList products={products} cart={cart} addToCart={addToCart} />
+        </div>
         <div>
           <HeadingTitle title="장바구니 내역" level="section" />
-
-          <div className="space-y-2">
-            {cart.map((item) => {
-              const appliedDiscount = getAppliedDiscount(item);
-              return (
-                <div
-                  key={item.product.id}
-                  className="flex justify-between items-center bg-white p-3 rounded shadow"
-                >
-                  <div>
-                    <span className="font-semibold">{item.product.name}</span>
-                    <br />
-                    <span className="text-sm text-gray-600">
-                      {item.product.price}원 x {item.quantity}
-                      {appliedDiscount > 0 && (
-                        <span className="text-green-600 ml-1">
-                          ({(appliedDiscount * 100).toFixed(0)}% 할인 적용)
-                        </span>
-                      )}
-                    </span>
-                  </div>
-                  <div>
-                    <button
-                      onClick={() =>
-                        updateQuantity(item.product.id, item.quantity - 1)
-                      }
-                      className="bg-gray-300 text-gray-800 px-2 py-1 rounded mr-1 hover:bg-gray-400"
-                    >
-                      -
-                    </button>
-                    <button
-                      onClick={() =>
-                        updateQuantity(item.product.id, item.quantity + 1)
-                      }
-                      className="bg-gray-300 text-gray-800 px-2 py-1 rounded mr-1 hover:bg-gray-400"
-                    >
-                      +
-                    </button>
-                    <button
-                      onClick={() => removeFromCart(item.product.id)}
-                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                    >
-                      삭제
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <CartList
+            cart={cart}
+            updateQuantity={updateQuantity}
+            removeFromCart={removeFromCart}
+          />
 
           <div className="mt-6 bg-white p-4 rounded shadow">
             <HeadingTitle title="쿠폰 적용" level="subSection" />
