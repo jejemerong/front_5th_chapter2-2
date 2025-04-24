@@ -8,7 +8,7 @@ interface CouponListProps {
 export const CouponList = ({ coupons }: CouponListProps) => {
   return (
     <div className="space-y-2">
-      <HeadingTitle title="현재 쿠폰 목록" level="section" />
+      <HeadingTitle title="현재 쿠폰 목록" level="miniSection" />
       {coupons.map((coupon, index) => (
         <div
           key={index}
