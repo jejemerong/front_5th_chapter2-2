@@ -1,12 +1,14 @@
 import { Product, CartItem, Coupon } from "../../types";
 
+// 재고 조회
 export const getRemainingStock = (product: Product, cart: CartItem[]) => {
   const cartItem = cart.find((item) => item.product.id === product.id);
   return product.stock - (cartItem?.quantity || 0);
 };
 
+// 아이템 총액 계산
 export const calculateItemTotal = (item: CartItem) => {
-  // 할인 없이 총액 계산
+  // 할인 없이
   const total = item.product.price * item.quantity;
   // 할인 적용
   if (item.product.discounts.length > 0) {
@@ -55,20 +57,10 @@ export const calculateCartTotal = (
     return acc + itemPrice * (1 - appliedDiscount);
   }, 0);
 
-  // 쿠폰 적용
-  let finalTotalAfterDiscount = totalAfterItemDiscount;
-  if (selectedCoupon) {
-    if (selectedCoupon.discountType === "amount") {
-      finalTotalAfterDiscount = Math.max(
-        0,
-        totalAfterItemDiscount - selectedCoupon.discountValue
-      );
-    } else {
-      finalTotalAfterDiscount =
-        totalAfterItemDiscount * (1 - selectedCoupon.discountValue / 100);
-    }
-  }
-
+  const finalTotalAfterDiscount = applyCouponDiscount(
+    totalAfterItemDiscount,
+    selectedCoupon
+  );
   const totalDiscount = totalBeforeDiscount - finalTotalAfterDiscount;
 
   return {
@@ -76,6 +68,19 @@ export const calculateCartTotal = (
     totalAfterDiscount: finalTotalAfterDiscount,
     totalDiscount,
   };
+};
+
+export const applyCouponDiscount = (
+  totalAmount: number,
+  coupon: Coupon | null
+): number => {
+  if (!coupon) return totalAmount;
+
+  if (coupon.discountType === "amount") {
+    return Math.max(0, totalAmount - coupon.discountValue);
+  }
+
+  return totalAmount * (1 - coupon.discountValue / 100);
 };
 
 export const updateCartItemQuantity = (
@@ -96,4 +101,28 @@ export const updateCartItemQuantity = (
     return item;
   });
   return updatedCart;
+};
+
+export const addItemToCart = (
+  prevCart: CartItem[],
+  product: Product
+): CartItem[] => {
+  const existingItem = prevCart.find((item) => item.product.id === product.id);
+
+  if (existingItem) {
+    return prevCart.map((item) =>
+      item.product.id === product.id
+        ? { ...item, quantity: Math.min(item.quantity + 1, product.stock) }
+        : item
+    );
+  }
+
+  return [...prevCart, { product, quantity: 1 }];
+};
+
+export const removeItemFromCart = (
+  cart: CartItem[],
+  productId: string
+): CartItem[] => {
+  return cart.filter((item) => item.product.id !== productId);
 };

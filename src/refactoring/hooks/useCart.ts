@@ -5,6 +5,8 @@ import {
   calculateCartTotal,
   getRemainingStock,
   updateCartItemQuantity,
+  addItemToCart,
+  removeItemFromCart,
 } from "../models/cart";
 
 export const useCart = () => {
@@ -12,30 +14,12 @@ export const useCart = () => {
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
   const addToCart = (product: Product) => {
-    const remainingStock = getRemainingStock(product, cart);
-    if (remainingStock === 0) return;
-
-    setCart((prevCart) => {
-      const existingItem = prevCart.find(
-        (item) => item.product.id === product.id
-      );
-
-      if (existingItem) {
-        return prevCart.map((item) =>
-          item.product.id === product.id
-            ? { ...item, quantity: Math.min(item.quantity + 1, product.stock) }
-            : item
-        );
-      }
-
-      return [...prevCart, { product, quantity: 1 }];
-    });
+    if (getRemainingStock(product, cart) === 0) return;
+    setCart((prevCart) => addItemToCart(prevCart, product));
   };
 
   const removeFromCart = (productId: string) => {
-    setCart((prevCart) =>
-      prevCart.filter((item) => item.product.id !== productId)
-    );
+    setCart((prevCart) => removeItemFromCart(prevCart, productId));
   };
 
   const updateQuantity = (productId: string, newQuantity: number) => {
