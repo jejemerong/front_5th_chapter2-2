@@ -33,7 +33,7 @@ export const ProductManager = ({
     handleAddDiscount,
     handleRemoveDiscount,
     handleEditComplete,
-  } = useProductManager(products, onProductUpdate);
+  } = useProductManager(onProductUpdate);
 
   return (
     <div>

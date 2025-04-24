@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Product, Discount } from "../../types";
 
 export const useProductManager = (
-  products: Product[],
   onProductUpdate: (product: Product) => void
 ) => {
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
