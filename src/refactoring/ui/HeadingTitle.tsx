@@ -1,6 +1,6 @@
 interface HeadingTitleProps {
   title: string;
-  level: "page" | "section" | "subSection";
+  level: "page" | "section" | "subSection" | "miniSection";
 }
 
 const HEADING_VARIANTS = {
@@ -15,6 +15,10 @@ const HEADING_VARIANTS = {
   subSection: {
     Element: "h2",
     className: "text-2xl font-semibold mb-2",
+  },
+  miniSection: {
+    Element: "h3",
+    className: "text-lg font-semibold mb-2",
   },
 } as const;
 
