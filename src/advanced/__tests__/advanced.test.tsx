@@ -1,10 +1,15 @@
 import { useState } from "react";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it, test, vi } from "vitest";
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { CartPage } from "../../refactoring/pages/CartPage";
 import { AdminPage } from "../../refactoring/pages/AdminPage";
 import { Coupon, Product } from "../../types";
 import * as discountUtils from "../../refactoring/models/cart";
+import { AddBtn } from "../../refactoring/ui/AddBtn";
+import {
+  convertDecimalToPercentage,
+  convertPercentageToDecimal,
+} from "../../refactoring/utils/convertUnit";
 
 const mockProducts: Product[] = [
   {
@@ -274,6 +279,70 @@ describe("advanced > ", () => {
         })
       ).toBe(9000);
     });
+    describe("convertPercentageToDecimal", () => {
+      it("퍼센트를 소수점으로 정확히 변환해야 한다", () => {
+        expect(convertPercentageToDecimal(10)).toBe(0.1);
+        expect(convertPercentageToDecimal(5)).toBe(0.05);
+        expect(convertPercentageToDecimal(100)).toBe(1);
+      });
+    });
+
+    describe("convertDecimalToPercentage", () => {
+      it("소수점을 퍼센트로 정확히 변환해야 한다", () => {
+        expect(convertDecimalToPercentage(0.1)).toBe(10);
+        expect(convertDecimalToPercentage(0.05)).toBe(5);
+        expect(convertDecimalToPercentage(1)).toBe(100);
+      });
+    });
+
+    //UI 컴포넌트 테스트
+    describe("AddBtn 컴포넌트", () => {
+      it("버튼 클릭 시 addToCart 함수가 호출되어야 한다", () => {
+        const mockAddToCart = vi.fn();
+        const product = {
+          id: "1",
+          name: "테스트 상품",
+          price: 1000,
+          stock: 10,
+          discounts: [],
+        };
+
+        render(
+          <AddBtn
+            onClick={() => mockAddToCart(product)}
+            disabled={product.stock <= 0}
+          >
+            추가
+          </AddBtn>
+        );
+
+        fireEvent.click(screen.getByRole("button"));
+        expect(mockAddToCart).toHaveBeenCalledWith(product);
+      });
+
+      it("재고가 0이면 버튼이 비활성화되어야 한다", () => {
+        const mockAddToCart = vi.fn();
+        const product = {
+          id: "1",
+          name: "테스트 상품",
+          price: 1000,
+          stock: 0,
+          discounts: [],
+        };
+
+        render(
+          <AddBtn
+            onClick={() => mockAddToCart(product)}
+            disabled={product.stock <= 0}
+          >
+            추가
+          </AddBtn>
+        );
+
+        expect(screen.getByRole("button")).toBeDisabled();
+      });
+    });
+
     test("새로운 hook 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요", () => {
       expect(true).toBe(true);
     });
