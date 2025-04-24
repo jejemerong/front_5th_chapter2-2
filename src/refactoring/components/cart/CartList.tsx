@@ -1,5 +1,6 @@
-import { CartItem } from "../../types";
-import { getAppliedDiscount } from "../models/cart";
+import { CartItem } from "../../../types";
+import { getAppliedDiscount } from "../../models/cart";
+import { HeadingTitle } from "../../ui/HeadingTitle";
 
 interface Props {
   cart: CartItem[];
@@ -10,6 +11,7 @@ interface Props {
 export const CartList = ({ cart, updateQuantity, removeFromCart }: Props) => {
   return (
     <div className="space-y-2">
+      <HeadingTitle title="장바구니 내역" level="section" />
       {cart.map((item) => {
         const appliedDiscount = getAppliedDiscount(item);
         return (

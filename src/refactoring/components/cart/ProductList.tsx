@@ -1,6 +1,7 @@
-import { CartItem, Product } from "../../types";
-import { getRemainingStock, getMaxDiscount } from "../models/cart";
-import { AddBtn } from "../ui/AddBtn";
+import { CartItem, Product } from "../../../types";
+import { getRemainingStock, getMaxDiscount } from "../../models/cart";
+import { AddBtn } from "../../ui/AddBtn";
+import { HeadingTitle } from "../../ui/HeadingTitle";
 interface Props {
   products: Product[];
   cart: CartItem[];
@@ -10,6 +11,7 @@ interface Props {
 export const ProductList = ({ products, cart, addToCart }: Props) => {
   return (
     <div className="space-y-2">
+      <HeadingTitle title="상품 목록" level="section" />
       {products.map((product) => {
         const remainingStock = getRemainingStock(product, cart);
         return (
